@@ -13,60 +13,60 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
- // late Future<Response>? response;
- // var isLoaded = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
         child: Column(
           children: [
-            Container(
-              height: 700,
-              child: FutureBuilder(
-                  future: Urls.bankOverview,
-                  builder: ((context, snapshot) {
-                    Map tomap = (snapshot.data);
-                    var reponcekey = tomap.keys.toList();
-                    var reponcevalue = tomap.values.toList();
-
-                    // var responce = Response.fromJson(snapshot.data);
-                    if (snapshot.hasData) {
-                      return Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                               const Text("Overview",style: TextStyle(
-                                  color: Color.fromARGB(255, 20, 32, 66),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600
-                                ),),
-                                Divider(),
-                            Flexible(
-                              child: ListView.builder(
-                                  itemCount: reponcekey.length,
-                                  itemBuilder: (context, index) {
-                                    if (reponcevalue[index] == null) {
-                                      return ReusalbleRow(
-                                          title: reponcekey[index].toString(),
-                                          value: "-");
-                                    }
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Overview",
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 20, 32, 66),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Divider(),
+                  FutureBuilder(
+                      future: Urls.bankOverview,
+                      builder: ((context, snapshot) {
+                        Map tomap = snapshot.data ?? {};
+                        var reponcekey = tomap.keys.toList();
+                        var reponcevalue = tomap.values.toList();
+                        return Flexible(
+                          child: ListView.builder(
+                              itemCount: reponcekey.length,
+                              itemBuilder: (context, index) {
+                                if (snapshot.hasData) {
+                                  if (reponcevalue[index].toString() ==
+                                      'null') {
+                                    return ReusalbleRow(
+                                        title: reponcekey[index].toString(),
+                                        value: "-");
+                                  } else {
                                     return ReusalbleRow(
                                         title: reponcekey[index].toString(),
                                         value: reponcevalue[index].toString());
-                                  }),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return Center(child: const CircularProgressIndicator());
-                  })
-                  ),
+                                  }
+                                } else if (snapshot.hasError) {
+                                  return Text('${snapshot.error}');
+                                }
+                                return Center(
+                                    child: const CircularProgressIndicator());
+                              }),
+                        );
+                      }))
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
             ),
             PerformanceData()
           ],
@@ -77,7 +77,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ReusalbleRow extends StatelessWidget {
-  String title, value;
+  final String title;
+  final String value;
   ReusalbleRow({Key? key, required this.title, required this.value})
       : super(key: key);
 
